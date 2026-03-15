@@ -573,12 +573,31 @@ export default function AgentSkills() {
     setSlideKey((k) => k + 1);
   };
 
-  const next = () => { if (current < SLIDES.length - 1) go(current + 1); else setIsPlaying(false); };
-  const prev = () => { if (current > 0) go(current - 1); };
+  const next = () => {
+    setCurrent((c) => {
+      if (c < SLIDES.length - 1) {
+        setSlideKey((k) => k + 1);
+        return c + 1;
+      }
+      setIsPlaying(false);
+      return c;
+    });
+  };
+
+  const prev = () => {
+    setCurrent((c) => {
+      if (c > 0) {
+        setSlideKey((k) => k + 1);
+        return c - 1;
+      }
+      return c;
+    });
+  };
 
   useEffect(() => {
     if (isPlaying) {
-      timerRef.current = setTimeout(next, current === 0 || current === SLIDES.length - 1 ? 5000 : 8000);
+      const delay = current === 0 || current === SLIDES.length - 1 ? 5000 : 8000;
+      timerRef.current = setTimeout(next, delay);
     }
     return () => clearTimeout(timerRef.current);
   }, [current, isPlaying]);
@@ -591,7 +610,7 @@ export default function AgentSkills() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [current]);
+  }, []);
 
   return (
     <div style={{ width: "100%", height: "100vh", background: COLORS.bg, display: "flex", flexDirection: "column", fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif", overflow: "hidden", position: "relative" }}>
